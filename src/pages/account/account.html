@@ -1,0 +1,83 @@
+<ion-header>
+	<ion-navbar>
+		<ion-title>الملف الشخصي</ion-title>
+	</ion-navbar>
+</ion-header>
+<ion-content>
+	<div relative overflow class="account-header" text-center (swipe)="onSwipeContent($event)">
+		<img float-left width-100 src="assets/images/account-bg.png" />
+		<div mark absolute top left width-100 height-100></div>
+		<ion-row center padding absolute top left width-100 height-100>
+			<ion-col>
+				<div *ngIf="!isLogin">
+					<div class="account-avatar" margin-auto>
+						<ion-icon name="ios-contact"></ion-icon>
+					</div>
+					<button ion-button color="light" clear [navPush]="LoginPage" class="disable-hover">
+						<b>{{'account.login'|translate}}</b>
+					</button>
+				</div>
+				<div *ngIf="isLogin">
+					<div class="account-avatar" margin-auto>
+						<ion-icon *ngIf="!data.user.wp_user_avatar" name="ios-contact"></ion-icon>
+						<img *ngIf="data.user.wp_user_avatar" [src]="data.user.wp_user_avatar" width-100 height-100 />
+					</div>
+					<button absolute top right ion-button color="light" clear (click)="signOut()" class="disable-hover">
+						<ion-icon icon-big name="icon-logout"></ion-icon>
+					</button>
+					<h4 no-margin [navPush]="ProfilePage">
+						<b light>{{data.user.display_name}}</b>
+						<ion-icon font-80 name="icon-pen"></ion-icon>
+					</h4>
+					<h5 no-margin>{{data.user.user_email}}</h5>
+				</div>
+			</ion-col>
+		</ion-row>
+	</div>
+	<ion-list no-margin class="account-list" *ngIf="data.text" (swipe)="onSwipeContent($event)">
+	<ion-item-divider color="light">حسابي</ion-item-divider>
+		<button ion-item color="light" [navPush]="isLogin?OrderPage:LoginPage">
+			<ion-icon name="icon-list-4" item-left></ion-icon>
+			<ion-label>{{'account.my_order'|translate}}</ion-label>
+			<ion-spinner item-right *ngIf="isLogin && !loadedOrder"></ion-spinner>
+			<ion-note item-right *ngIf="loadedOrder || !isLogin">{{data.order||0}}</ion-note>
+		</button>
+		<button ion-item color="light" [navPush]="FavoritePage">
+			<ion-icon name="ios-heart-outline" item-left></ion-icon>
+			<ion-label>{{'account.favorite'|translate}}</ion-label>
+			<ion-note item-right>{{data.favorite||0}}</ion-note>
+		</button>
+		<ion-item-divider color="light">الإعدادات</ion-item-divider>
+		<ion-item color="light">
+			<ion-icon name="icon-notification" item-left></ion-icon>
+			<ion-label>{{'account.push_notification'|translate}}</ion-label>
+			<ion-toggle item-right [(ngModel)]="data.notification" (ngModelChange)="notification()"></ion-toggle>
+		</ion-item>
+		<button ion-item color="light" (click)="changeTextSize()">
+			<ion-icon name="icon-font" item-left></ion-icon>
+			<ion-label>{{'account.text_size.title'|translate}}</ion-label>
+			<ion-note item-right text-capitalize>{{'account.text_size.option.'+data.text|translate}}</ion-note>
+		</button>
+		<button ion-item color="light" (click)="shareApp()">
+			<ion-icon name="icon-send" item-left></ion-icon>
+			<ion-label>{{'account.app_share'|translate}}</ion-label>
+		</button>
+		<button ion-item color="light" (click)="rateApp()">
+			<ion-icon name="icon-star-out" item-left></ion-icon>
+			<ion-label>{{'account.rate_us'|translate}}</ion-label>
+		</button>
+		<ion-item-divider color="light">لأصحاب الخدمات</ion-item-divider>
+       <button ion-item color="light" (click)="myorderslk()">
+			<ion-icon name="bookmarks" item-left></ion-icon>
+			<ion-label>الحجوزات المقدمة</ion-label>
+		</button>
+		<button ion-item color="light" (click)="myorderslk()">
+			<ion-icon name="paper" item-left></ion-icon>
+			<ion-label>عروضي و معلوماتي</ion-label>
+		</button>
+		<ion-item>
+			<ion-label text-center>{{'account.version'|translate}}</ion-label>
+		</ion-item>
+	</ion-list>
+</ion-content>
+

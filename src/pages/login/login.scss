@@ -1,0 +1,33 @@
+page-login {
+.header .toolbar .back-button,.header .toolbar .toolbar-title {
+    color: #ffffff !important;
+}
+	.header{
+		.toolbar{
+			.toolbar-background{
+				background:none;
+				border:none;
+			}
+			.back-button, .toolbar-title{color:color($colors, dark, base);}
+		}
+		&:after{display:none}
+	}
+	.content{
+    background-image: url(../assets/images/login-bg.png);
+    background-size: 100% 100%;
+		.login-form{
+			.item{
+				.icon{
+					-webkit-align-self:flex-end;
+					-ms-flex-item-align:flex-end;
+					align-self:flex-end;
+					font-size:20px;
+					margin:0;
+				}
+			}
+			.list-md .item-block .item-inner {
+    border-bottom: 1px solid #545454;
+}
+		}
+	}
+}

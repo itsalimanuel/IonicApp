@@ -1,0 +1,8 @@
+{
+  "name": "ali",
+  "app_id": "792bd09f",
+  "type": "ionic-angular",
+  "integrations": {
+    "cordova": {}
+  }
+}

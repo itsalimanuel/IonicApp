@@ -1,0 +1,30 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>المزيد</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+			<ion-item-divider color="light">خدمتنا</ion-item-divider>
+		<button ion-item color="light" [navPush]="TermsPage">
+			<ion-icon name="icon-list" item-left></ion-icon>
+			<ion-label>{{'account.terms_of_use'|translate}}</ion-label>
+		</button>
+		<button ion-item color="light" [navPush]="">
+			<ion-icon name="icon-list-lock" item-left></ion-icon>
+			<ion-label>{{'account.privacy_policy'|translate}}</ion-label>
+		</button>
+		<button (click)="contact()" ion-item color="light" [navPush]="ContactPage">
+			<ion-icon name="icon-location" item-left></ion-icon>
+			<ion-label>{{'account.contact_us'|translate}}</ion-label>
+		</button>
+		<button (click)="about()"  ion-item color="light" [navPush]="AboutPage">
+			<ion-icon  name="icon-info" item-left></ion-icon>
+			<ion-label>{{'account.about_us'|translate}}</ion-label>
+		</button>
+		<button (click)="complaints()"  ion-item color="light" [navPush]="AboutPage">
+			<ion-icon  name="clipboard" item-left></ion-icon>
+			<ion-label>قسم الشكاوى</ion-label>
+		</button>
+</ion-content>
+

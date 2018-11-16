@@ -1,0 +1,25 @@
+page-about {
+    ion-content{
+        background: linear-gradient(160deg,#283593 30%,#F50057 70%);
+    }
+    .h{
+        color: aliceblue;
+        font-size: 36px;
+    }
+    ion-label{
+        color: aliceblue;
+    }
+
+    img{
+        align-items: center;
+        margin-top: 60px;
+        left: 0;
+        right: 0;
+    }
+
+    .imglogo{
+        margin-top: 50px;
+        align-items: center;
+
+    }
+}

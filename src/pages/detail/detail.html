@@ -1,0 +1,505 @@
+<ion-header>
+	<ion-navbar>
+	<ion-buttons left>
+      <button (click)="gotoaccount()">
+        <ion-icon name="md-menu"></ion-icon>
+      </button>
+    </ion-buttons>
+	<ion-buttons end>
+		<button-cart #cart icon="ios-cart"></button-cart>
+    </ion-buttons>
+	<ion-title>{{'detail.title'|translate}}</ion-title>
+	<ion-buttons start>
+   <button (click)="gotoSearch()">
+   <ion-icon name="icon-search"></ion-icon>
+   </button>
+   </ion-buttons>
+	</ion-navbar>
+</ion-header>
+
+<ion-content secondary-bg>
+	<!-- Refresh -->
+	<ion-refresher (ionRefresh)="doRefresh($event)">
+		<ion-refresher-content [pullingIcon]="'general.pullingIcon'|translate" [pullingText]="'general.pullToRefresh'|translate"
+		 [refreshingSpinner]="'general.refreshingSpinner'|translate" [refreshingText]="'general.refreshing'|translate">
+		</ion-refresher-content>
+	</ion-refresher>
+	<!-- Slides -->
+	<div  *ngFor="let cat of detail.categories">
+	<div *ngIf="cat.name=='بارتي' || cat.name=='ديجيه' || cat.name=='صوتيات' || cat.name=='عازفيين' || cat.name=='فرق' || cat.name=='فنانات' || cat.name=='فنانين'">
+	<button  ion-button full color="dark" (click)="addToCart()"><ion-icon name="musical-notes" item-right></ion-icon>&nbsp;إضغط هنا للإستماع&nbsp;</button>
+	</div>
+	</div>
+	<div relative class="product-slides" padding-4 light-bg>
+		<ion-slides (ionSlideDidChange)="changeSlides($event)">
+			<ion-slide *ngFor="let image of detail.wooconnector_crop_images">
+				<img float-left *ngIf="image.wooconnector_large" [src]="image.wooconnector_large" (click)="viewImage(image.wooconnector_large)"
+				/>
+				<img float-left *ngIf="!image.wooconnector_large" src="assets/images/no-image.png" />
+			</ion-slide>
+		</ion-slides>
+		<div absolute class="product-status" *ngIf="detail.in_stock">
+			<img float-left *ngIf="detail.on_sale" src="assets/images/instock.png" />
+		</div>
+		<div absolute class="product-status" *ngIf="!detail.in_stock">
+			<img float-left *ngIf="detail.on_sale" src="assets/images/outstock.png" />
+		</div>
+		<button ion-button absolute clear *ngIf="detail.name" [color]="favorite[id] ?'primary':'gray'" (click)="changeFavorite()"
+		 class="product-favorite disable-hover" light-bg>
+		<ion-icon icon-big name="md-heart"></ion-icon>
+	</button>
+		<div absolute bottom primary-bg product-sale *ngIf="detail.sale_price">
+			<span light>{{(detail.sale_price/detail.regular_price*100)-100|number:'1.0-0'}}%</span>
+		</div>
+		<div absolute text-center padding-4 width-100 class="slides-info" *ngIf="detail.wooconnector_crop_images">
+			<span light padding-4>{{slides}} من {{detail.wooconnector_crop_images.length}}</span>
+		</div>
+	</div>
+	<!-- Button Home -->
+	<button ion-button ion-fixed bottom margin color="light" class="button-home" (click)="popToRoot()">
+	<ion-icon name="icon-home-2" primary></ion-icon>
+</button>
+	<!-- Body -->
+	<div *ngIf="detail.name" (swipe)="onSwipe($event)">
+		<!-- Info -->
+		<div padding light-bg>
+			<h3 *ngIf="detail.type!='grouped' && detail.price" no-margin>
+				<b dark font-110>{{detail.price*1||0|price}}</b>
+				<span margin-left *ngIf="detail.sale_price" font-80>
+				<span text-through>{{detail.regular_price*1|price}}</span>
+				</span>
+			</h3>
+			<h3 *ngIf="detail.type=='grouped'" no-margin dark>
+				<b font-80 [innerHTML]="detail.price_html"></b>
+			</h3>
+			<span dark [innerHTML]="detail.name"></span>
+			
+			<ion-row center class="product-rate" [navPush]="CommentsPage" [navParams]="{id:detail.id,data:detail.wooconnector_reviews,allow:detail.reviews_allowed}">
+				<div class="rate">
+					<div class="rating" [style.width]="detail.average_rating*20+'%'"></div>
+				</div>
+				<span margin-left no-wrap>{{detail.rating_count}} {{'detail.rating'|translate}} & {{detail.wooconnector_review_count}} {{'detail.review'|translate}}</span>
+				<ion-icon margin-left name="ios-arrow-back"></ion-icon>
+			</ion-row>
+		</div>
+		<div  *ngFor="let cat of detail.categories">
+		<div padding margin-top light-bg *ngIf="cat.name=='الاستراحات' || cat.name=='قاعات الافراح' || cat.name=='بارتي' || cat.name=='ديجيه' || cat.name=='صوتيات' || cat.name=='عازفيين' || cat.name=='فرق' || cat.name=='فنانات' || cat.name=='فنانين'">
+		<ion-item>
+        <ion-icon name="calendar" item-left></ion-icon>
+        <ion-label>تاريخ الحجز</ion-label>
+        <ion-datetime displayFormat="MM/DD/YYYY" [(ngModel)]="DateCommande"></ion-datetime>
+        </ion-item>
+		</div>
+		</div>
+		<div  *ngFor="let cat of detail.categories">
+		<div padding margin-top light-bg *ngIf="cat.name=='بارتي' || cat.name=='ديجيه' || cat.name=='صوتيات' || cat.name=='عازفيين' || cat.name=='فرق' || cat.name=='فنانات' || cat.name=='فنانين'">
+		<ion-item>
+    <ion-label color="primary">عدد أيام الحجز</ion-label>
+		&nbsp;<ion-input></ion-input>&nbsp;
+  </ion-item>
+  <div text-uppercase dark no-wrap>
+				
+				<b float-right>النوع</b>
+			</div>
+			<ion-row dark class="quantity-price" wrap>
+				
+				<ion-col no-padding text-right>
+					<ion-select class="detaiinp" canceltext="إلغاء" oktext="حسنا" float-right>
+    <ion-option selected value="small">زواج</ion-option>
+    <ion-option value="medium">ملكه</ion-option>
+    <ion-option value="larg">بارتي </ion-option>
+    <ion-option value="xlarg">عقود وسكات عرسان</ion-option>
+	<ion-option value="xlarg">حفلة عائلية</ion-option>
+  </ion-select>
+				</ion-col>
+			</ion-row>
+			<div text-uppercase dark no-wrap>
+				
+				<b float-right>موسيقى</b>
+			</div>
+			<ion-row dark class="quantity-price" wrap>
+				
+				<ion-col no-padding text-right>
+					<ion-select class="detaiinp" canceltext="إلغاء" oktext="حسنا" float-right>
+ 
+    <ion-option value="medium">نعم</ion-option>
+    <ion-option value="larg">لا </ion-option>
+  </ion-select>
+				</ion-col>
+			</ion-row>
+		</div>
+		</div>
+		<br>
+		<div  *ngFor="let cat of detail.categories">
+		<div padding margin-top light-bg *ngIf="cat.name=='بوكيهات ورد' ">
+		<ion-item>
+        <ion-icon name="calendar" item-left></ion-icon>
+        <ion-label>تاريخ الحجز</ion-label>
+        <ion-datetime displayFormat="MM/DD/YYYY" [(ngModel)]="DateCommande"></ion-datetime>
+        </ion-item>
+		<div text-uppercase dark no-wrap>
+				
+				<b float-right>النوع</b>
+			</div>
+			<ion-row dark class="quantity-price" wrap>
+				
+				<ion-col no-padding text-right>
+					<ion-select class="detaiinp" canceltext="إلغاء" oktext="حسنا" float-right>
+    <ion-option selected value="small">ورود طبيعية</ion-option>
+    <ion-option value="medium">ورود شبه طبيعية</ion-option>
+    <ion-option value="larg">بوكيهات </ion-option>
+    <ion-option value="xlarg">عقود وسكات عرسان</ion-option>
+	<ion-option value="xlarg">تغليف الهدايا</ion-option>
+	<ion-option value="xlarg">تزيين سيارتك</ion-option>
+	<ion-option value="xlarg">تنسيق غرف النوم</ion-option>
+  </ion-select>
+				</ion-col>
+			</ion-row>
+			<div text-uppercase dark no-wrap>
+				
+				<b float-right>خدمة توصيل</b>
+			</div>
+			<ion-row dark class="quantity-price" wrap>
+				
+				<ion-col no-padding text-right>
+					<ion-select class="detaiinp" canceltext="إلغاء" oktext="حسنا" float-right>
+    <ion-option selected value="yes">نعم</ion-option>
+    <ion-option value="no">لا</ion-option>
+  </ion-select>
+				</ion-col>
+			</ion-row>
+		</div>
+		</div>
+		<br>
+		<div  *ngFor="let cat of detail.categories">
+		<div padding margin-top light-bg *ngIf="cat.name=='الكوشات'  ">
+<div text-uppercase dark no-wrap>
+				
+				
+			</div>
+			<ion-row dark class="quantity-price" wrap>
+				<ion-col no-padding>
+				<b>العدد</b>
+                   <ion-input dark class="detaiinp" type="number" value="1"></ion-input>
+                </ion-col>
+				<ion-col no-padding text-right>
+				<b float-right>المقاس</b>
+					<ion-select class="detaiinp" canceltext="إلغاء" oktext="حسنا" float-right>
+    <ion-option selected value="small">small</ion-option>
+    <ion-option value="medium">medium</ion-option>
+    <ion-option value="larg">larg </ion-option>
+    <ion-option value="xlarg">xlarg</ion-option>
+  </ion-select>
+				</ion-col>
+			</ion-row>
+			<div text-uppercase dark no-wrap>
+				
+				<b float-right>النوع</b>
+			</div>
+			<ion-row dark class="quantity-price" wrap>
+				
+				<ion-col no-padding text-right>
+					<ion-select class="detaiinp" canceltext="إلغاء" oktext="حسنا" float-right>
+    <ion-option selected value="small">اضاءة</ion-option>
+    <ion-option value="medium">تزيين ممرات</ion-option>
+    <ion-option value="larg">تجهيز طاولات </ion-option>
+    <ion-option value="xlarg">ارضيات ملونة</ion-option>
+	<ion-option value="xlarg">شاشات عرض</ion-option>
+	<ion-option value="xlarg">زفاف</ion-option>
+  </ion-select>
+				</ion-col>
+			</ion-row>
+			<ion-item>
+        <ion-icon name="calendar" item-left></ion-icon>
+        <ion-label>تاريخ الحجز</ion-label>
+        <ion-datetime displayFormat="MM/DD/YYYY" [(ngModel)]="DateCommande"></ion-datetime>
+        </ion-item>
+		</div>
+		</div>
+		<br>
+		<div  *ngFor="let cat of detail.categories">
+		<div padding margin-top light-bg *ngIf="cat.name=='مصورات زواجات'  ">
+<div text-uppercase dark no-wrap>
+				
+				
+			</div>
+			
+			<div text-uppercase dark no-wrap>
+				
+				<b float-right>النوع</b>
+			</div>
+			<ion-row dark class="quantity-price" wrap>
+				
+				<ion-col no-padding text-right>
+					<ion-select class="detaiinp" canceltext="إلغاء" oktext="حسنا" float-right>
+    <ion-option selected value="small">تصوير فيديو</ion-option>
+    <ion-option value="medium">تصوير فوتوغرافي</ion-option>
+    <ion-option value="larg">تصوير الفل دي </ion-option>
+    <ion-option value="xlarg">زواج</ion-option>
+	<ion-option value="xlarg">مناسبات عائلية</ion-option>
+	<ion-option value="xlarg">تخرج</ion-option>
+	<ion-option value="xlarg">بارتي</ion-option>
+  </ion-select>
+				</ion-col>
+			</ion-row>
+			<ion-item>
+        <ion-icon name="calendar" item-left></ion-icon>
+        <ion-label>تاريخ الحجز</ion-label>
+        <ion-datetime displayFormat="MM/DD/YYYY" [(ngModel)]="DateCommande"></ion-datetime>
+        </ion-item>
+		</div>
+		</div>
+		<div  *ngFor="let cat of detail.categories">
+		<div padding margin-top light-bg *ngIf="cat.name=='فساتين الافراح' || cat.name=='مصممات الفسانين'  || cat.name=='مسكات عرائس' || cat.name=='ميكب ارتسيت' ">
+<div text-uppercase dark no-wrap>
+				
+				
+			</div>
+			<ion-row dark class="quantity-price" wrap>
+				<ion-col no-padding>
+				<b>العدد</b>
+                   <ion-input dark class="detaiinp" type="number" value="1"></ion-input>
+                </ion-col>
+				<ion-col no-padding text-right>
+				<b float-right>المقاس</b>
+					<ion-select class="detaiinp" canceltext="إلغاء" oktext="حسنا" float-right>
+    <ion-option selected value="small">small</ion-option>
+    <ion-option value="medium">medium</ion-option>
+    <ion-option value="larg">larg </ion-option>
+    <ion-option value="xlarg">xlarg</ion-option>
+  </ion-select>
+				</ion-col>
+			</ion-row>
+			<div text-uppercase dark no-wrap>
+				
+				<b float-right>النوع</b>
+			</div>
+			<ion-row dark class="quantity-price" wrap>
+				
+				<ion-col no-padding text-right>
+					<ion-select class="detaiinp" canceltext="إلغاء" oktext="حسنا" float-right>
+    <ion-option selected value="small">بكج عروسة كامل</ion-option>
+    <ion-option value="medium">ميكب عروسة</ion-option>
+    <ion-option value="larg">هيرستايل عروسة </ion-option>
+    <ion-option value="xlarg">ميكب للفرد العادي</ion-option>
+	<ion-option value="xlarg">هيرستايل للفرد العادي</ion-option>
+	<ion-option value="xlarg">بكج للفرد العادي</ion-option>
+  </ion-select>
+				</ion-col>
+			</ion-row>
+			<ion-item>
+        <ion-icon name="calendar" item-left></ion-icon>
+        <ion-label>تاريخ الحجز</ion-label>
+        <ion-datetime displayFormat="MM/DD/YYYY" [(ngModel)]="DateCommande"></ion-datetime>
+        </ion-item>
+		</div>
+		</div>
+		<div  *ngFor="let cat of detail.categories">
+		<div padding margin-top light-bg *ngIf="cat.name=='بوفيهات مفتوحة' || cat.name=='تجهيز العزائم' || cat.name=='تغليفات' || cat.name=='حلويات' || cat.name=='مشروبات' || cat.name=='معجنات'">
+       
+	   <div text-uppercase dark no-wrap>
+	   <ion-col no-padding>
+				<b>العدد</b>
+                   <ion-input dark class="detaiinp" type="number" value="1"></ion-input>
+                </ion-col>
+
+			</div>
+			<ion-row dark class="quantity-price" wrap>
+				<ion-col no-padding>
+				<b>الصنف</b>
+                   <ion-input dark class="detaiinp" type="text" value=""></ion-input>
+                </ion-col>
+				<ion-item>
+        <ion-icon name="calendar" item-left></ion-icon>
+        <ion-label>تاريخ الحجز</ion-label>
+        <ion-datetime displayFormat="MM/DD/YYYY" [(ngModel)]="DateCommande"></ion-datetime>
+        </ion-item>
+				<ion-col no-padding text-right>
+				<b float-right>الحجم</b>
+					<ion-select class="detaiinp" canceltext="إلغاء" oktext="حسنا" float-right>
+                    <ion-option selected value="وسط">وسط</ion-option>
+                    <ion-option value="كبير">كبير</ion-option>
+                    <ion-option value="صغير">صغير </ion-option>
+                    </ion-select>
+				</ion-col>
+				<ion-col no-padding text-right>
+				<b float-right>هل تريد توصيل</b>
+					<ion-select class="detaiinp" canceltext="إلغاء" oktext="حسنا" float-right>
+                    <ion-option selected value="نعم">نعم</ion-option>
+                    <ion-option value="لا">لا</ion-option>
+
+                    </ion-select>
+				</ion-col>
+			</ion-row>
+		</div>
+		</div>
+		
+		<!-- Attributes -->
+		<div padding margin-top light-bg *ngIf="detail.type!='grouped' && detail.type!='external'">
+			<div *ngIf="detail.type=='variable'">
+				<div *ngFor="let attr of detail.attributes | filter:{variation:true}">
+					<!-- Color -->
+					<div *ngIf="(attr.name|uppercase)=='COLOR'" class="attribute-color">
+						<div text-uppercase><b dark>{{attr.name}}</b></div>
+						<ion-list overflow radio-group [(ngModel)]="attributes[attr.name].option" (ngModelChange)="getVariation()">
+							<ion-item float-left margin-right *ngFor="let option of attr.options" no-padding>
+								<ion-radio [value]="(option|lowercase)" [style.background]="option"></ion-radio>
+							</ion-item>
+						</ion-list>
+					</div>
+					<!-- Size or Orther -->
+					<div *ngIf="(attr.name|uppercase)!='COLOR'" [ngClass]="(attr.name|uppercase)=='SIZE' ? 'attribute-size':'attribute-default'">
+						<div text-uppercase><b dark>{{attr.name}}</b></div>
+						<ion-list overflow radio-group [(ngModel)]="attributes[attr.name].option" (ngModelChange)="getVariation()">
+							<ion-item float-left *ngFor="let option of attr.options" no-padding>
+								<ion-label [attr.text-center]="(attr.name|uppercase)=='SIZE'?true:null">{{option}}</ion-label>
+								<ion-radio [value]="(option|lowercase)"></ion-radio>
+							</ion-item>
+						</ion-list>
+					</div>
+				</div>
+			</div>
+			<!-- Quantum & Price-->
+			  <div text-uppercase dark no-wrap>
+
+				<b float-right>{{'detail.price'|translate}}  :</b>
+				<h3 no-margin><b>{{detail.price*quantity||0|price}}</b></h3>
+			</div>
+			
+
+			<div text-uppercase dark no-wrap>
+				<br/>
+				<b float-right>طريقة الدفع</b>
+				
+			</div >
+			
+			<ion-row dark class="quantity-price" wrap>
+				
+				<ion-col no-padding text-right>
+					<ion-select class="detaiinp" canceltext="إلغاء" oktext="حسنا" float-right>
+                    <ion-option selected value="كاش">كاش</ion-option>
+                    <ion-option value="كبير">باي بال</ion-option>
+                    <ion-option value="صغير">فيزا كارد </ion-option>
+                    </ion-select>
+					
+				</ion-col>
+			</ion-row>
+		</div>
+		<!-- Grouped -->
+		<div padding-horizontal border-bottom light-bg *ngIf="detail.type=='grouped'">
+			<ion-row *ngFor="let product of groupedProduct; let i = index" class="item-product-grouped">
+				<ion-col no-padding [navPush]="DetailPage" [navParams]="{id:product.id}">
+					<div dark><b [innerHTML]="product.title"></b></div>
+					<span *ngIf="product.sale_price" font-80>
+					<span text-through>{{product.regular_price*1|price}}</span>
+					</span>
+					<b dark>{{product.price*1||0|price}}</b>
+					<ion-badge font-80 *ngIf="product.sale_price">{{(product.sale_price/product.regular_price*100)-100|number:'1.0-0'}}%</ion-badge>
+					<span *ngIf="!detail.in_stock" font-80>
+					{{'detail.outStock'|translate}}
+				</span>
+				</ion-col>
+				<ion-col *ngIf="product.type=='variable' || product.type=='external'" width-33 no-padding>
+					<button ion-button clear no-margin [navPush]="DetailPage" [navParams]="{id:product.id}" class="disable-hover">
+					<span *ngIf="product.type=='variable'">{{'detail.grouped.variable'|translate}}</span>
+					<span *ngIf="product.type=='external'" text-underline>{{product.button_text}}</span>
+				</button>
+				</ion-col>
+				<ion-col *ngIf="product.type=='simple' && detail.in_stock" width-33 no-padding>
+					<ion-item *ngIf="product.sold_individually">
+						<ion-checkbox [(ngModel)]="groupedProduct[i].quantity" value="1"></ion-checkbox>
+					</ion-item>
+					<button-quantity *ngIf="!product.sold_individually" float-left [(ngModel)]="groupedProduct[i].quantity" min="0" [max]="(product.manage_stock && !product.backorders_allowed)?product.stock_quantity:null"></button-quantity>
+				</ion-col>
+			</ion-row>
+		</div>
+		<!-- About This Item -->
+		<div padding margin-top light-bg border-bottom class="about-this-item" *ngIf="detail.type!='grouped' && (detail.sku || detail.manage_stock || 0< detail.attributes.length)">
+			<div margin-bottom><b dark>{{'detail.about_this_item'|translate}}</b></div>
+			<ion-row *ngIf="detail.sku">
+				<ion-col><b>{{'detail.sku'|translate}}</b></ion-col>
+				<ion-col>{{detail.sku}}</ion-col>
+			</ion-row>
+			<ion-row *ngIf="detail.manage_stock">
+				<ion-col><b>{{'detail.quantity'|translate}}</b></ion-col>
+				<ion-col>{{detail.stock_quantity||0}} {{'detail.available'|translate}}</ion-col>
+			</ion-row>
+			<ion-row *ngFor="let attribute of detail.attributes">
+				<ion-col text-capitalize><b>{{attribute.name}}</b></ion-col>
+				<ion-col>{{attribute.options|ArrayJoin}}</ion-col>
+			</ion-row>
+		</div>
+		<!-- Item Description -->
+		<div padding-horizontal light-bg class="detail-description">
+			<div padding-top><b dark>{{'detail.item_description'|translate}}</b></div>
+			<div *ngIf="!viewMore" [innerHtml]="detail.description|viewmore" class="description-content"></div>
+			<div *ngIf="viewMore" [innerHtml]="detail.description" class="description-content disable-hover"></div>
+			<button ion-button clear (click)="viewMore=!viewMore" font-80 no-padding no-margin>
+			<div *ngIf="!viewMore">{{'detail.view_more'|translate}}</div>
+			<div *ngIf="viewMore">{{'detail.view_less'|translate}}</div>
+		</button>
+		</div>
+		<!-- Buyer Protection -->
+		<div margin-top class="buyer-protection">
+			<ion-row>
+				<ion-col width-20>
+					<ion-icon name="md-pin" success></ion-icon>
+				</ion-col>
+				<ion-col padding-left>
+					<div><b dark>الموقع</b></div>
+					<span>عرض الموقع على الخريطة</span>
+					<h3 no-margin><b>{{'detail.location'||translate}}</b></h3>
+				</ion-col>
+			</ion-row>
+		</div>
+		<!-- Buy The Look -->
+		<div margin-top light-bg *ngIf="detail.modernshop_look_images && 0<detail.modernshop_look_images.length">
+			<div padding-horizontal padding-top><b dark>{{'detail.buy_the_look'|translate}}</b></div>
+			<ion-row padding-8 wrap>
+				<ion-col padding-8 width-30 *ngFor="let product of detail.modernshop_look_images" [navPush]="DetailPage" [navParams]="{id:product.id}">
+					<div relative overflow>
+						<img float-left *ngIf="product.images && product.images.modern_square" [src]="product.images.modern_square" />
+						<img float-left *ngIf="!product.images || !product.images.modern_square" src="assets/images/no-image.png" />
+						<div absolute bottom primary-bg product-sale *ngIf="product.sale_price">
+							<span light>{{(product.sale_price/product.regular_price*100)-100|number:'1.0-0'}}%</span>
+						</div>
+					</div>
+					<span class="tt">{{product.title}}</span>
+					<p float-left width-100>
+						<span *ngIf="product.type!='variable' && product.type!='grouped'">
+						<b dark font-90>{{product.price*1||0|price}}</b>
+						<span *ngIf="product.sale_price" margin-left text-through>{{product.regular_price*1|price}}</span>
+						</span>
+						<span *ngIf="product.type=='variable' || product.type=='grouped'">
+						<b dark font-90 [innerHTML]="product.price_html"></b>
+					</span>
+					</p>
+					
+				</ion-col>
+			</ion-row>
+		</div>
+	</div>
+</ion-content>
+
+<ion-footer class="detail-footer">
+	<ion-toolbar no-padding>
+		<ion-row *ngIf="detail.name">
+			<ion-col border-right no-padding>
+				<button ion-button full clear color="dark" (click)="share()" class="disable-hover">
+				<ion-icon icon-big name="icon-share"></ion-icon>
+			</button>
+			</ion-col>
+			<ion-col no-padding>
+				<button ion-button full clear class="disable-hover" color="dark" [navPush]="CommentsPage" [navParams]="{id:detail.id,data:detail.wooconnector_reviews,allow:detail.reviews_allowed}">
+				<ion-icon icon-big name="icon-chat"></ion-icon>
+				<ion-badge absolute>{{detail.rating_count}}</ion-badge>
+			</button>
+			</ion-col>
+			<ion-col width-30 primary-bg text-center no-padding>
+				<button ion-button full clear class="disable-hover" color="light" (click)="addToCart()">
+				<span>{{'detail.addToCart'|translate}}</span>
+			</button>
+			</ion-col>
+		</ion-row>
+	</ion-toolbar>
+</ion-footer>

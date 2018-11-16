@@ -1,0 +1,68 @@
+@font-face{font-family:"DroidKufi-Regular";src:local("DroidKufi-Regular"),url("../fonts/DroidKufi-Regular.ttf") format("truetype"),url("../fonts/DroidKufi-Regular.woff") format("woff")}
+
+b, strong {
+    font-family: DroidKufi-Regular !important;
+	font-size: 12px;
+}
+[absolute] {
+    left: 1px;
+}
+ion-app, ion-nav, ion-tab, ion-tabs, .app-root, .ion-page {
+    font-family: DroidKufi-Regular !important;
+}
+h2 {
+    text-align: right;
+    font-size: 18px !important;
+}
+.account-header {
+    color: #f3f3f3 !important;
+}
+ion-slide {
+    direction: ltr !important;
+}
+.detaiinp {
+   background-color: #ffedd6;
+    border: 1px solid #c6ac8c45;
+    border-radius: 5px;
+    margin: 5px;
+    width: 80%;
+}
+textarea {
+    display: block;
+    height: 120px;
+}
+ion-select.detaiinp {
+        max-width: 100% !important;
+    padding: 18px 8px 13px 16px !important;
+    text-align: right;
+    line-height: 18px;
+}
+.swiper-container {
+    direction: ltr !important;
+}
+.input-has-focus .label-md[floating], .input-has-value .label-md[floating] {
+    -webkit-transform: translate3d(0, 0, 0) scale(0.8);
+    transform: translate3d(0, 0, 0) scale(0.99) !important;
+}
+.alert-md .alert-radio-icon {
+    left: -13px !important;
+}
+ion-footer span {
+    font-size: 10px !important;
+}
+[ion-fixed] {
+    left: 5px !important;
+}
+[font-80] {
+    font-size: 65% !important;
+}
+.alert-md .alert-radio-label {
+    text-align: right !important;
+}
+ion-scroll .scroll-content {
+    direction: rtl !important;
+}
+ion-col[offset-25] {
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
